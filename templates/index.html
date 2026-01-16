@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>FlightBot</title>
+</head>
+<body>
+
+<div id="chat">
+    <p style="text-align:right">
+    Logged in as <b>{{ user }}</b> |
+    <a href="/bookings">My Bookings</a> |
+    <a href="/logout">Logout</a>
+    </p>
+
+    <div class="bot">FlightBot: Do you want to BOOK a ticket or CANCEL a ticket?</div>
+
+    <div id="messages"></div>
+
+    <div class="controls">
+        <input id="input" placeholder="Type here..." />
+        <button onclick="send()">Send</button>
+        <button onclick="reset()">New</button>
+    </div>
+</div>
+
+<script>
+const input = document.getElementById("input");
+const messages = document.getElementById("messages");
+
+function scrollBottom() {
+    messages.scrollTop = messages.scrollHeight;
+}
+
+function addMessage(cls, text) {
+    const div = document.createElement("div");
+    div.className = cls;
+    div.textContent = text;
+    messages.appendChild(div);
+    scrollBottom();
+}
+
+function send() {
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    addMessage("user", "You: " + msg);
+    input.value = "";
+
+    fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg })
+    })
+    .then(res => res.json())
+    .then(data => {
+        addMessage("bot", "FlightBot: " + data.reply);
+    });
+}
+
+function reset() {
+    messages.innerHTML = "";
+    addMessage("bot", "FlightBot: Do you want to BOOK a ticket or CANCEL a ticket?");
+}
+
+input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+        send();
+    }
+});
+</script>
+
+</body>
+</html>
