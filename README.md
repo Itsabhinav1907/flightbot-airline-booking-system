@@ -166,4 +166,3 @@ Full-stack development skills
 
 Abhinav Singh
 B.Tech – Computer Science (AI & ML)
-Final-Year Project
